@@ -40,7 +40,7 @@ namespace Pathfinding.Lib.Maps.Grid
                 if (IsWithinGrid(step) && IsWalkable(step) && step.Direction.IsPossibleDirection(possibleMoves))
                 {
                     possibleMoves |= step.Direction;
-                    step.Parent = start;
+                    step.SetParent(start);
                     possibleSteps.Add(step);
                 }
             }

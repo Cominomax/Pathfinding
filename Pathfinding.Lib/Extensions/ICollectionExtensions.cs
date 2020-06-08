@@ -6,7 +6,7 @@ namespace Pathfinding.Lib.Extensions
     public static  class ICollectionExtensions
     {
         /// <summary>
-        /// Gets and removes the minimum value from the list.
+        /// Gets and removes the minimum (first occurrence of it if multiple min) value from the list.
         /// </summary>
         /// <param name="collection">The collection of data on which to do the operation.</param>
         /// <typeparam name="T">Must implement IComparable.</typeparam>

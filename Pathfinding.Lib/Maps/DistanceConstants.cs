@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Pathfinding.Lib.Maps
 {
-    internal static class DistanceConstants
+    public static class DistanceConstants
     {
         public static decimal MonodirectionalMove { get; } = 1m;
 

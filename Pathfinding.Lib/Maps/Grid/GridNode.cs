@@ -18,30 +18,37 @@ namespace Pathfinding.Lib.Maps.Grid
 
         public int X { get; }
         public int Y { get; }
-
-        public DirectionEnum Direction { get; set; }
-        public decimal DistanceFromOrigin { get; set; }
-
+        public DirectionEnum Direction { get; }
+        public decimal DistanceFromOrigin { get; private set; }
         /// <summary>
         /// F is the distance between this node and the origin and the euclidian distance between this and the end. 
         /// </summary>
-        public decimal F{ get; private set; } 
+        public decimal F{ get; private set; }
 
-        public INode Parent { get; set; }
+        /// <summary>
+        /// Parent of the Node.
+        /// </summary>
+        public INode Parent { get; private set;  }
 
         /// <summary>
         /// Calculates the F Value of the node. F is the distance between this node and the origin and the euclidian distance between this and the end. 
         /// </summary>
         /// <param name="start">INode implementor. Another instance of GridNode.</param>
         /// <param name="end">INode implementor. Another instance of GridNode.</param>
-        public void SetF(INode start, INode end)
+        public void SetF(INode end)
         {
-            DistanceFromOrigin = start.DistanceFromOrigin + 
-                (Direction.HasMoreThan1Direction()
-                ? DistanceConstants.BidirectionalMove 
-                : DistanceConstants.MonodirectionalMove);
             var distanceFromGoal = CalculateDiagonalDistance(end as GridNode);
             F = DistanceFromOrigin + distanceFromGoal;
+        }
+
+        /// <summary>
+        /// Set the parent of the Node and the distanceFromOrigin
+        /// </summary>
+        /// <param name="parent"></param>
+        public void SetParent(INode parent)
+        {
+            Parent = parent;
+            SetDistanceFromOrigin();
         }
 
         /// <summary>
@@ -100,6 +107,18 @@ namespace Pathfinding.Lib.Maps.Grid
         private decimal CalculateDiagonalDistance(GridNode end)
         {
             return Math.Max( Math.Abs(X - end.X) , Math.Abs(Y - end.Y) );
+        }
+
+
+        /// <summary>
+        /// Calculates the distance from the parent
+        /// </summary>
+        private void SetDistanceFromOrigin()
+        {
+            DistanceFromOrigin = Parent.DistanceFromOrigin +
+                (Direction.HasMoreThan1Direction()
+                ? DistanceConstants.BidirectionalMove
+                : DistanceConstants.MonodirectionalMove);
         }
 
         /// <summary>

@@ -27,12 +27,12 @@ namespace Pathfinding.Lib.Algorithms
                 var possibleSuccessor = scen.Map.GeneratePossibleStepsFrom(q);
                 foreach (INode item in possibleSuccessor)
                 {
-                    item.SetF(q, scen.End);
                     if (scen.IsCompleted(item))
                     {
                         return item;
                     }
-                    
+                    item.SetF(scen.End);
+
                     if (open.Any(n => n.Equals(item) && n.F <= item.F))
                     {
                         continue;
