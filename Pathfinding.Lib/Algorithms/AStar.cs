@@ -18,7 +18,7 @@ namespace Pathfinding.Lib.Algorithms
         /// <returns>Node at the end of the found Path. Reconstruct Parents to obtain the collection.</returns>
         public INode Resolve(Scenario scen)
         {
-            var open = new List<INode>() { scen.Start };
+            var open = new List<INode>() { scen.Params.Start };
             var closed = new List<INode>();
 
             while(open.Any())
@@ -31,7 +31,7 @@ namespace Pathfinding.Lib.Algorithms
                     {
                         return item;
                     }
-                    item.SetF(scen.End);
+                    item.SetF(scen.Params.End);
 
                     if (open.Any(n => n.Equals(item) && n.F <= item.F))
                     {
