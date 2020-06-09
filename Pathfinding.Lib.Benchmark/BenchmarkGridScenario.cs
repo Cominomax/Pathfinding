@@ -41,6 +41,18 @@ namespace Pathfinding.Lib.Benchmark
             }
         }
 
+        [Benchmark()]
+        public void RunTimedScenarios()
+        {
+            var scenarioParams = _scenarioNodes[MapNames];
+            foreach (var parameters in scenarioParams)
+            {
+                var scenario = new TimedScenario<Scenario>(new Scenario());
+                scenario.TrySetScenario(parameters);
+                scenario.RunScenario();
+            }
+        }
+
         private static ScenarioParams[] GetScenarioParamsForAR0011SR()
         {
             var mapFilepath = Path.Combine(GetFolderPath(SpecialFolder.MyDocuments), "PathfindingData", "BaldursGate", "Maps", Map1ForBenchmark);

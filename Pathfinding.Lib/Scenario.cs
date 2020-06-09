@@ -7,7 +7,7 @@ namespace Pathfinding.Lib
     /// <summary>
     /// Represents a running scenario of the algorithm.
     /// </summary>
-    public class Scenario
+    public class Scenario : IScenario
     {
         public ScenarioParams Params { get; private set; }
         public bool IsSet { get; private set; } = false;

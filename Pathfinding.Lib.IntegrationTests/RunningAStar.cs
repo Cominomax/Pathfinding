@@ -38,7 +38,7 @@ namespace Pathfinding.Lib.IntegrationTests
                 var fileScenario = new FileScenario(streamReader.ReadLine().Split('\t'));
                 scenarioParams.Start = new GridNode(fileScenario.StartX, fileScenario.StartY);
                 scenarioParams.End = new GridNode(fileScenario.EndX, fileScenario.EndY);
-                var scen = new Scenario();
+                var scen = new TimedScenario<Scenario>(new Scenario());
                 var response = scen.TrySetScenario(scenarioParams);
                 if (!response.Success)
                 {
@@ -60,22 +60,16 @@ namespace Pathfinding.Lib.IntegrationTests
                 }
 
                 streamWriter.WriteLine($"Scenario {i}: going from ({fileScenario.StartX},{fileScenario.StartY}) to ({fileScenario.EndX}, { fileScenario.EndY}).");
-                streamWriter.WriteLine($"The expected length of path is {fileScenario.ExpectedLength}.");
-                streamWriter.WriteLine($"The result length of path is {scen.Result.PathLength}.");
+                streamWriter.WriteLine($"Calculating the path took {scen.ElapsedMilliseconds} ms.");
+                streamWriter.WriteLine($"The expected length of path is: {fileScenario.ExpectedLength}.");
+                streamWriter.WriteLine($"The result length of path is:   {scen.Result.PathLength}.");
                 streamWriter.WriteLine(scen.Result.Path.ToCollectionString());
 
                 int precision = (int)1e-7;
-                try
-                {
-                    Assert.Equal(fileScenario.ExpectedLength, scen.Result.PathLength, precision);
-                }
-                catch (Exception ex)
-                {
-                    streamWriter.WriteLine(ex.ToString());
-                }
+
+                Assert.Equal(fileScenario.ExpectedLength, scen.Result.PathLength, precision);
                 streamWriter.WriteLine();
                 streamWriter.Flush();
-
                 i++;
             }
         }
