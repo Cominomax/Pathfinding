@@ -1,7 +1,9 @@
 ﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Exporters;
 using Pathfinding.Lib.Algorithms;
 using Pathfinding.Lib.Maps.Grid;
 using Pathfinding.Lib.Maps.Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using static System.Environment;
@@ -12,17 +14,18 @@ namespace Pathfinding.Lib.Benchmark
     [HtmlExporter]
     public class BenchmarkGridScenario
     {
-        private readonly Dictionary<string, ScenarioParams[]> _scenarioNodes;
+        private Dictionary<string, Func<ScenarioParams[]>> _scenarioNodes;
         private const string Map1ForBenchmark = "AR0011SR.map";
         private const string Map2ForBenchmark = "AR0012SR.map";
         private const string Map3ForBenchmark = "AR0013SR.map";
+
         public BenchmarkGridScenario()
         {
-            _scenarioNodes = new Dictionary<string, ScenarioParams[]>()
+            _scenarioNodes = new Dictionary<string, Func<ScenarioParams[]>>()
             {
-                {Map1ForBenchmark, GetScenarioParamsForAR0011SR() },
-                {Map2ForBenchmark, GetScenarioParamsForAR0012SR() },
-                {Map3ForBenchmark, GetScenarioParamsForAR0013SR() }
+                {Map1ForBenchmark, GetScenarioParamsForAR0011SR },
+                {Map2ForBenchmark, GetScenarioParamsForAR0012SR },
+                {Map3ForBenchmark, GetScenarioParamsForAR0013SR }
             };
         }
 
@@ -32,7 +35,7 @@ namespace Pathfinding.Lib.Benchmark
         [Benchmark(Baseline = true)]
         public void RunSyncScenarios()
         {
-            var scenarioParams = _scenarioNodes[MapNames];
+            var scenarioParams = _scenarioNodes[MapNames]();
             foreach (var parameters in scenarioParams)
             {
                 var scenario = new Scenario();
@@ -44,7 +47,7 @@ namespace Pathfinding.Lib.Benchmark
         [Benchmark()]
         public void RunTimedScenarios()
         {
-            var scenarioParams = _scenarioNodes[MapNames];
+            var scenarioParams = _scenarioNodes[MapNames]();
             foreach (var parameters in scenarioParams)
             {
                 var scenario = new TimedScenario<Scenario>(new Scenario());
