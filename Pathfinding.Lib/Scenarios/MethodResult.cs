@@ -1,4 +1,4 @@
-﻿namespace Pathfinding.Lib
+﻿namespace Pathfinding.Lib.Scenarios
 {
     public struct MethodResult
     {

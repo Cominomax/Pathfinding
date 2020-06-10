@@ -1,8 +1,9 @@
-using System.Collections.Generic;
 using System.IO;
 
 using Pathfinding.Lib.Maps.Utils;
 using Pathfinding.Lib.Maps.Grid;
+using System.Collections.Concurrent;
+using System.Collections.ObjectModel;
 
 namespace Pathfinding.Lib.Maps
 {
@@ -14,15 +15,21 @@ namespace Pathfinding.Lib.Maps
     public class MapSingleton
     {
         private static MapSingleton _instance;
-        private Dictionary<string, IMap> _loadedMaps;
+        private readonly ConcurrentDictionary<string, IMap> _loadedMaps;
+        private static readonly object _object = new object();
 
         /// <summary>
         /// Private constructor to follow pattern. Instantiate the Dictionary.
         /// </summary>
         private MapSingleton()
         {
-            _loadedMaps = new Dictionary<string, IMap>();
+            _loadedMaps = new ConcurrentDictionary<string, IMap>();
         }
+
+        /// <summary>
+        /// For test purposes. How else?
+        /// </summary>
+        internal ReadOnlyDictionary<string, IMap> LoadedMap => new ReadOnlyDictionary<string, IMap>(_loadedMaps);
 
         /// <summary>
         /// Singleton Instance for the application. Use this.
@@ -31,10 +38,13 @@ namespace Pathfinding.Lib.Maps
         public static MapSingleton Instance 
         { 
             get
-            {  
-                if (_instance == null)
+            {
+                lock (_object)
                 {
-                    _instance  = new MapSingleton();
+                    if (_instance == null)
+                    {
+                        _instance = new MapSingleton();
+                    }
                 }
                 return _instance;
             } 
@@ -51,16 +61,19 @@ namespace Pathfinding.Lib.Maps
             {
                 return new EmptyMapWithError("File does not exist!");
             }
-            
-            if (!_loadedMaps.ContainsKey(mapFilePath))
+            lock (_object)
             {
-                switch (type)   
+                if (!_loadedMaps.ContainsKey(mapFilePath))
                 {
-                    case MapTypes.Grid:
-                        _loadedMaps.Add(mapFilePath, GridFactory.ReadGrid(mapFilePath));
-                        break;
-                    default:
-                        return new EmptyMapWithError("Cannot find Map Type. Please enter a valid one.");
+                    switch (type)
+                    {
+                        case MapTypes.Grid:
+                            var task = GridFactory.ReadGrid(mapFilePath);
+                            _loadedMaps.TryAdd(mapFilePath, task.Result);
+                            break;
+                        default:
+                            return new EmptyMapWithError("Cannot find Map Type. Please enter a valid one.");
+                    }
                 }
             }
             return _loadedMaps[mapFilePath];

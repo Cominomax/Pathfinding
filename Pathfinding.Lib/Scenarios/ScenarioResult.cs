@@ -1,7 +1,7 @@
 ﻿using Pathfinding.Lib.Maps.Utils;
 using System.Collections.Generic;
 
-namespace Pathfinding.Lib
+namespace Pathfinding.Lib.Scenarios
 {
     public struct ScenarioResult
     {

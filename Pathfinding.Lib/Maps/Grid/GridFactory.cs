@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Pathfinding.Lib.Maps.Utils;
 
 namespace Pathfinding.Lib.Maps.Grid
@@ -15,13 +16,13 @@ namespace Pathfinding.Lib.Maps.Grid
         /// </summary>
         /// <param name="filePath"></param>
         /// <returns></returns>
-        internal static IMap ReadGrid(string filePath)
+        internal static async Task<IMap> ReadGrid(string filePath)
         {
             try
             {
                 using var streamReader = new StreamReader(new FileStream(filePath, FileMode.Open));
             
-                var input = streamReader.ReadLine();
+                var input = await streamReader.ReadLineAsync();
                 int height = 0, width = 0;
                 while(input != "map")
                 {
@@ -36,12 +37,12 @@ namespace Pathfinding.Lib.Maps.Grid
                         default:
                         break;
                     }
-                    input = streamReader.ReadLine();
+                    input = await streamReader.ReadLineAsync();
                 }
                 var newGrid = new Grid(filePath, height, width);
                 for (int i = 0; i < height; i++)
                 {
-                    input = streamReader.ReadLine();
+                    input = await streamReader.ReadLineAsync();
                     newGrid.GridMap[i] = input.ToArray();
                 }
 

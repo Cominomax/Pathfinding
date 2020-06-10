@@ -2,32 +2,35 @@ using Pathfinding.Lib.Maps.Utils;
 using Pathfinding.Lib.Extensions;
 using Pathfinding.Lib.Maps;
 
-namespace Pathfinding.Lib
+namespace Pathfinding.Lib.Scenarios
 {
     /// <summary>
     /// Represents a running scenario of the algorithm.
     /// </summary>
     public class Scenario : IScenario
     {
-        public ScenarioParams Params { get; private set; }
-        public bool IsSet { get; private set; } = false;
-        public IMap Map { get; private set; }
-        public ScenarioResult Result { get; set; }
+        private ScenarioParams _params = new ScenarioParams();
 
-        public MethodResult TrySetScenario(ScenarioParams @params)
+        public bool IsSet { get; private set; } = false;
+        public ScenarioResult Result { get; private set; }
+        public IMap Map { get; private set; }
+        public INode End => _params.End;
+        public INode Start => _params.Start;
+
+        public virtual MethodResult TrySetScenario(ScenarioParams @params)
         {
             IsSet = false;
-            Params = @params;
-            Map = MapSingleton.Instance.GetMap(Params.FilePath, Params.MapType);
+            _params = @params;
+            Map = MapSingleton.Instance.GetMap(_params.FilePath, _params.MapType);
             if (Map is EmptyMapWithError)
             {
                 return new MethodResult(false, Map.ToString());
             }
-            if (!Map.IsValidInMap(Params.Start))
+            if (!Map.IsValidInMap(Start))
             {
                 return new MethodResult(false, "Invalid Start Point. Is either on a position which it cannot be or out of the map");
             }
-            if (!Map.IsValidInMap(Params.End))
+            if (!Map.IsValidInMap(End))
             {
                 return new MethodResult(false, "Invalid Stop Point. Is either on a position which it cannot be or out of the map");
             }
@@ -35,13 +38,13 @@ namespace Pathfinding.Lib
             return MethodResult.WithSuccess;
         }
 
-        public MethodResult RunScenario()
+        public virtual MethodResult RunScenario()
         {
             if (!IsSet)
             {
                 return new MethodResult(false, "The scenario has not been set yet. Please call \'TrySetScenario()\' first.");
             }
-            var resultNode = Params.Algorithm.Resolve(this);
+            var resultNode = _params.Algorithm.Resolve(this);
 
             Result = new ScenarioResult()
             {
@@ -51,9 +54,9 @@ namespace Pathfinding.Lib
             return MethodResult.WithSuccess;
         }
 
-        public bool IsCompleted(INode node)
+        public virtual bool IsCompleted(INode node)
         {
-            if (node.Equals(Params.End))
+            if (node.Equals(_params.End))
             {
                 return true;
             }

@@ -1,7 +1,7 @@
 ﻿using Pathfinding.Lib.Algorithms;
 using Pathfinding.Lib.Maps.Utils;
 
-namespace Pathfinding.Lib
+namespace Pathfinding.Lib.Scenarios
 {
     public struct ScenarioParams
     {

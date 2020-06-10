@@ -4,11 +4,11 @@ using Xunit;
 using System.IO;
 using static System.Environment;
 
-using Pathfinding.Lib;
 using Pathfinding.Lib.Maps.Grid;
 using Pathfinding.Lib.Maps.Utils;
 using Pathfinding.Lib.Algorithms;
 using Pathfinding.Lib.Extensions;
+using Pathfinding.Lib.Scenarios;
 
 namespace Pathfinding.Lib.IntegrationTests
 {
@@ -33,12 +33,12 @@ namespace Pathfinding.Lib.IntegrationTests
             };
 
             int i = 0;
-            while (!streamReader.EndOfStream && i < 50)
+            while (!streamReader.EndOfStream && i < 100)
             {
                 var fileScenario = new FileScenario(streamReader.ReadLine().Split('\t'));
                 scenarioParams.Start = new GridNode(fileScenario.StartX, fileScenario.StartY);
                 scenarioParams.End = new GridNode(fileScenario.EndX, fileScenario.EndY);
-                var scen = new TimedScenario<Scenario>(new Scenario());
+                var scen = new TimedScenario();
                 var response = scen.TrySetScenario(scenarioParams);
                 if (!response.Success)
                 {
