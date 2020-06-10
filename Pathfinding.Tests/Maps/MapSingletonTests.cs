@@ -17,7 +17,7 @@ namespace Pathfinding.Lib.UnitTests.Maps
         {
             //Arrange
             var mapNames = new string[] {"AR0011SR.map",
-                    "AR0069SR.map", "AR0069SR.map", "AR0315SR.map",
+                    "AR0013SR.map", "AR0069SR.map", "AR0315SR.map",
                     "AR0400SR.map", "AR0408SR.map", "AR0411SR.map",
                     "AR0701SR.map", "AR0600SR.map", "AR0700SR.map"};
             var mapFilepaths = mapNames.Select(mn => Path.Combine(GetFolderPath(SpecialFolder.MyDocuments), "PathfindingData", "BaldursGate", "Maps", mn)).ToArray();
@@ -34,11 +34,11 @@ namespace Pathfinding.Lib.UnitTests.Maps
             Task.WaitAll(tasks);
 
             //Assert
+            Assert.Equal(mapNames.Count(), MapSingleton.Instance.LoadedMap.Count);
             foreach (var key in mapFilepaths)
             {
                 Assert.True(MapSingleton.Instance.LoadedMap.ContainsKey(key));
             }
-            
         }
     }
 }
