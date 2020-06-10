@@ -22,19 +22,28 @@ namespace Pathfinding.Lib.IntegrationTests
         {
             SetMapFileNames(out string mapFilepath, out string scenFilepath, out string resultFilepath);
 
-            using var streamReader = new StreamReader(new FileStream(scenFilepath, FileMode.Open));
             using var streamWriter = new StreamWriter(new FileStream(resultFilepath, FileMode.Create));
+            List<Task> taskList = CreateActionsFromFile(scenFilepath, mapFilepath, streamWriter);
+            Parallel.ForEach(taskList, new ParallelOptions { MaxDegreeOfParallelism = 10 }, i =>
+            {
+                i.Start();
+            });
+            Task.WaitAll(taskList.ToArray());
+        }
+
+        private List<Task> CreateActionsFromFile(string scenFilepath, string mapFilepath, StreamWriter streamWriter)
+        {
+            using var streamReader = new StreamReader(new FileStream(scenFilepath, FileMode.Open));
             string line = streamReader.ReadLine(); //skip first line of scenario file as useless.
             var scenarioParams = new ScenarioParams()
             {
                 FilePath = mapFilepath,
                 MapType = MapTypes.Grid
             };
-
             int i = 0;
             var taskList = new List<Task>();
             var _lock = new object();
-            while (!streamReader.EndOfStream)
+            while (!streamReader.EndOfStream && i < 500)
             {
                 var fileScenario = new FileScenario(streamReader.ReadLine().Split('\t'));
                 scenarioParams.ScenarioName = i.ToString();
@@ -52,12 +61,13 @@ namespace Pathfinding.Lib.IntegrationTests
                 }
 
                 var task = new ScenarioRunner().BeginRunScenario(scen, new AStar())
-                    .ContinueWith((prevTask) => AssertResult(prevTask, fileScenario.ExpectedLength))                                                              
+                    .ContinueWith((prevTask) => AssertResult(prevTask, fileScenario.ExpectedLength))
                     .ContinueWith((prevTask) => WriteResultsToFile(prevTask, scen, fileScenario.ExpectedLength, streamWriter, _lock));
                 taskList.Add(task);
                 i++;
             }
-            Task.WaitAll(taskList.ToArray());
+
+            return taskList;
         }
 
         private static void SetMapFileNames(out string mapFilepath, out string scenFilepath, out string resultFilepath)
@@ -74,7 +84,6 @@ namespace Pathfinding.Lib.IntegrationTests
             lock (@lock)
             { 
                 streamWriter.WriteLine($"Scenario {scen.Name}: going from {scen.Start} to {scen.End}.");
-                streamWriter.WriteLine($"Calculating the path took {result.ElapsedMilliseconds} ms.");
                 streamWriter.WriteLine($"The expected length of path is: {expectedLength}.");
                 streamWriter.WriteLine($"The result length of path is:   {result.PathLength}.");
                 streamWriter.WriteLine(result.Path.ToCollectionString());
