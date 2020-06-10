@@ -1,9 +1,8 @@
 using System.Collections.Generic;
 using System.Linq;
-using Pathfinding;
 using Pathfinding.Lib.Extensions;
 using Pathfinding.Lib.Maps.Utils;
-using Pathfinding.Lib.Scenarios;
+using Pathfinding.Lib.Scenarios.Base;
 
 namespace Pathfinding.Lib.Algorithms
 {
@@ -17,7 +16,7 @@ namespace Pathfinding.Lib.Algorithms
         /// </summary>
         /// <param name="scen">Fully set scenario.</param>
         /// <returns>Node at the end of the found Path. Reconstruct Parents to obtain the collection.</returns>
-        public INode Resolve(IScenario scen)
+        public INode Resolve(IGotAStartAndAnEndOnAMap scen)
         {
             var open = new List<INode>() { scen.Start };
             var closed = new List<INode>();

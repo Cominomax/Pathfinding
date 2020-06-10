@@ -1,5 +1,5 @@
 using Pathfinding.Lib.Maps.Utils;
-using Pathfinding.Lib.Scenarios;
+using Pathfinding.Lib.Scenarios.Base;
 
 namespace Pathfinding.Lib.Algorithms
 {
@@ -8,6 +8,6 @@ namespace Pathfinding.Lib.Algorithms
     /// </summary>
     public interface IPathfindingAlgorithm
     {
-        INode Resolve(IScenario scen);
+        INode Resolve(IGotAStartAndAnEndOnAMap scen);
     }
 }

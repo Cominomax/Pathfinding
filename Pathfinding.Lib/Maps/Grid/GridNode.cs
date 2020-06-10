@@ -96,7 +96,7 @@ namespace Pathfinding.Lib.Maps.Grid
         /// <returns>"{Direction}: ({X},{Y})"</returns>
         public override string ToString()
         {
-            return $"{Direction}: ({X},{Y})";
+            return $"({X},{Y})";
         }
 
         /// <summary>

@@ -3,9 +3,12 @@ using BenchmarkDotNet.Exporters;
 using Pathfinding.Lib.Algorithms;
 using Pathfinding.Lib.Maps.Grid;
 using Pathfinding.Lib.Maps.Utils;
+using Pathfinding.Lib.Scenarios;
+using Pathfinding.Lib.Scenarios.Base;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using static System.Environment;
 
 namespace Pathfinding.Lib.Benchmark
@@ -33,27 +36,17 @@ namespace Pathfinding.Lib.Benchmark
         public string MapNames { get; set; }
 
         [Benchmark(Baseline = true)]
-        public void RunSyncScenarios()
+        public void RunAStarScenarios()
         {
             var scenarioParams = _scenarioNodes[MapNames]();
+            var tasks = new List<Task>();
             foreach (var parameters in scenarioParams)
             {
                 var scenario = new Scenario();
                 scenario.TrySetScenario(parameters);
-                scenario.RunScenario();
+                tasks.Add(new ScenarioRunner().BeginRunScenario(scenario, new AStar()));
             }
-        }
-
-        [Benchmark()]
-        public void RunTimedScenarios()
-        {
-            var scenarioParams = _scenarioNodes[MapNames]();
-            foreach (var parameters in scenarioParams)
-            {
-                var scenario = new TimedScenario<Scenario>(new Scenario());
-                scenario.TrySetScenario(parameters);
-                scenario.RunScenario();
-            }
+            Task.WaitAll(tasks.ToArray());
         }
 
         private static ScenarioParams[] GetScenarioParamsForAR0011SR()
@@ -61,9 +54,9 @@ namespace Pathfinding.Lib.Benchmark
             var mapFilepath = Path.Combine(GetFolderPath(SpecialFolder.MyDocuments), "PathfindingData", "BaldursGate", "Maps", Map1ForBenchmark);
             return new ScenarioParams[]
             {
-                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Algorithm = new AStar(), Start = new GridNode(82, 64), End = new GridNode(38, 126) },
-                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Algorithm = new AStar(), Start = new GridNode(103, 63), End = new GridNode(122, 158) },     
-                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Algorithm = new AStar(), Start = new GridNode(64, 59), End = new GridNode(161, 114) },      
+                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Start = new GridNode(82, 64), End = new GridNode(38, 126) },
+                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Start = new GridNode(103, 63), End = new GridNode(122, 158) },     
+                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Start = new GridNode(64, 59), End = new GridNode(161, 114) },      
             };
         }
 
@@ -72,9 +65,9 @@ namespace Pathfinding.Lib.Benchmark
             var mapFilepath = Path.Combine(GetFolderPath(SpecialFolder.MyDocuments), "PathfindingData", "BaldursGate", "Maps", Map2ForBenchmark);
             return new ScenarioParams[]
             {
-                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Algorithm = new AStar(), Start = new GridNode(23, 67), End = new GridNode(89, 125) },      
-                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Algorithm = new AStar(), Start = new GridNode(132, 95), End = new GridNode(28, 49) },      
-                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Algorithm = new AStar(), Start = new GridNode(66, 34), End = new GridNode(135, 81) },     
+                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Start = new GridNode(23, 67), End = new GridNode(89, 125) },      
+                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Start = new GridNode(132, 95), End = new GridNode(28, 49) },      
+                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Start = new GridNode(66, 34), End = new GridNode(135, 81) },     
             };
         }
 
@@ -83,9 +76,9 @@ namespace Pathfinding.Lib.Benchmark
             var mapFilepath = Path.Combine(GetFolderPath(SpecialFolder.MyDocuments), "PathfindingData", "BaldursGate", "Maps", Map3ForBenchmark);
             return new ScenarioParams[]
             {
-                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Algorithm = new AStar(), Start = new GridNode(87, 23), End = new GridNode(81, 134) },      
-                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Algorithm = new AStar(), Start = new GridNode(84, 26), End = new GridNode(92, 135) },				
-                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Algorithm = new AStar(), Start = new GridNode(76, 10), End = new GridNode(101, 123) },			
+                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Start = new GridNode(87, 23), End = new GridNode(81, 134) },      
+                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Start = new GridNode(84, 26), End = new GridNode(92, 135) },				
+                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Start = new GridNode(76, 10), End = new GridNode(101, 123) },			
             };
         }
     }

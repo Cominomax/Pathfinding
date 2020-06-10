@@ -1,6 +1,7 @@
 using Pathfinding.Lib.Maps.Utils;
 using Pathfinding.Lib.Extensions;
 using Pathfinding.Lib.Maps;
+using Pathfinding.Lib.Scenarios.Base;
 
 namespace Pathfinding.Lib.Scenarios
 {
@@ -12,7 +13,7 @@ namespace Pathfinding.Lib.Scenarios
         private ScenarioParams _params = new ScenarioParams();
 
         public bool IsSet { get; private set; } = false;
-        public ScenarioResult Result { get; private set; }
+        public string Name => _params.ScenarioName;
         public IMap Map { get; private set; }
         public INode End => _params.End;
         public INode Start => _params.Start;
@@ -35,22 +36,6 @@ namespace Pathfinding.Lib.Scenarios
                 return new MethodResult(false, "Invalid Stop Point. Is either on a position which it cannot be or out of the map");
             }
             IsSet = true;
-            return MethodResult.WithSuccess;
-        }
-
-        public virtual MethodResult RunScenario()
-        {
-            if (!IsSet)
-            {
-                return new MethodResult(false, "The scenario has not been set yet. Please call \'TrySetScenario()\' first.");
-            }
-            var resultNode = _params.Algorithm.Resolve(this);
-
-            Result = new ScenarioResult()
-            {
-                PathLength = resultNode.DistanceFromOrigin,
-                Path = resultNode.ToIEnumerable(),
-            };
             return MethodResult.WithSuccess;
         }
 
