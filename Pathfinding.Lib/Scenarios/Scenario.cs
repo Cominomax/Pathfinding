@@ -1,5 +1,4 @@
 using Pathfinding.Lib.Maps.Utils;
-using Pathfinding.Lib.Extensions;
 using Pathfinding.Lib.Maps;
 using Pathfinding.Lib.Scenarios.Base;
 
@@ -17,6 +16,7 @@ namespace Pathfinding.Lib.Scenarios
         public IMap Map { get; private set; }
         public INode End => _params.End;
         public INode Start => _params.Start;
+        public decimal ExpectedLength => _params.ExpectedLength;
 
         public virtual MethodResult TrySetScenario(ScenarioParams @params)
         {

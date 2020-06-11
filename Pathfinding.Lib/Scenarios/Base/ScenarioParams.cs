@@ -10,6 +10,6 @@ namespace Pathfinding.Lib.Scenarios.Base
         public MapTypes MapType { get; set; }
         public INode Start { get; set; }
         public INode End { get; set; }
-        
+        public decimal ExpectedLength { get; set; }
     }
 }

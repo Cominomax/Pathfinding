@@ -58,10 +58,9 @@ namespace Pathfinding.Lib.Maps.Grid
         /// <returns>result of decimal comparison.</returns>
         public int CompareTo(object obj) 
         {
-            GridNode otherNode = obj as GridNode;
-            if (otherNode != null)
-            {    
-                return this.F.CompareTo(otherNode.F);
+            if (obj is GridNode otherNode)
+            {
+                return F.CompareTo(otherNode.F);
             }
             return 1;
         }
