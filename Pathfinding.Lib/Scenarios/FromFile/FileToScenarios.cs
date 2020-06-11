@@ -1,35 +1,28 @@
 ﻿using Pathfinding.Lib.Maps.Grid;
 using Pathfinding.Lib.Maps.Utils;
 using Pathfinding.Lib.Scenarios.Base;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
-using static System.Environment;
 
 namespace Pathfinding.Lib.Scenarios.FromFile
 {
-    public class FileToScenario
+    internal class FileToScenarios
     {
-        private readonly string _scenFilepath;
-        private readonly string _mapFilepath;
-
-        public FileToScenario(string mapFilename)
+        internal IEnumerable<IScenario> Convert(string mapFilepath, string scenFilepath, int maxScenario = int.MaxValue)
         {
-            _mapFilepath = Path.Combine(GetFolderPath(SpecialFolder.MyDocuments), "PathfindingData", "BaldursGate", "Maps", mapFilename);
-            _scenFilepath = Path.Combine(GetFolderPath(SpecialFolder.MyDocuments), "PathfindingData", "BaldursGate", "Scenarios", mapFilename + ".scen");
-        }
+            var scenarioList = new List<Scenario>();
+            if (!File.Exists(mapFilepath) || !File.Exists(scenFilepath))
+            {
+                return scenarioList;
+            }
 
-        public IEnumerable<IScenario> CreateActionsFromFile(int maxScenario = int.MaxValue)
-        {
-            using var streamReader = new StreamReader(new FileStream(_scenFilepath, FileMode.Open));
+            using var streamReader = new StreamReader(new FileStream(scenFilepath, FileMode.Open));
             string line = streamReader.ReadLine(); //skip first line of scenario file as useless.
             var scenarioParams = new ScenarioParams()
             {
-                FilePath = _mapFilepath,
+                FilePath = mapFilepath,
                 MapType = MapTypes.Grid
             };
-            var scenarioList = new List<Scenario>();
 
             for (int i = 0; i < maxScenario && !streamReader.EndOfStream; i++)
             {

@@ -15,5 +15,10 @@ namespace Pathfinding.Lib.Heuristic
             var distanceFromGoal = Math.Abs(start.X - end.X) + Math.Abs(start.Y - end.Y);
             return start.DistanceFromOrigin + distanceFromGoal;
         }
+
+        public string ToNiceString()
+        {
+            return "Manhattan Distance Heuristic";
+        }
     }
 }

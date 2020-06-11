@@ -15,5 +15,10 @@ namespace Pathfinding.Lib.Heuristic
             var distanceFromGoal = (decimal) Math.Sqrt((Math.Abs(start.X - end.X)*2) + (Math.Abs(start.Y - end.Y)*2));
             return start.DistanceFromOrigin + distanceFromGoal;
         }
+
+        public string ToNiceString()
+        {
+            return "Euclidean Distance Heuristic";
+        }
     }
 }

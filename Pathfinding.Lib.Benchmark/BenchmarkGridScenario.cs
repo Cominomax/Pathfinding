@@ -1,11 +1,9 @@
 ﻿using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Exporters;
 using Pathfinding.Lib.Algorithms;
-using Pathfinding.Lib.Maps.Grid;
-using Pathfinding.Lib.Maps.Utils;
+using Pathfinding.Lib.Benchmarking;
+using Pathfinding.Lib.Heuristic;
 using Pathfinding.Lib.Scenarios;
-using Pathfinding.Lib.Scenarios.Base;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -17,69 +15,52 @@ namespace Pathfinding.Lib.Benchmark
     [HtmlExporter]
     public class BenchmarkGridScenario
     {
-        private Dictionary<string, Func<ScenarioParams[]>> _scenarioNodes;
         private const string Map1ForBenchmark = "AR0011SR.map";
-        private const string Map2ForBenchmark = "AR0012SR.map";
-        private const string Map3ForBenchmark = "AR0013SR.map";
+        private const string Map2ForBenchmark = "AR0531SR.map";
+        private const string Map3ForBenchmark = "AR0704SR.map";
 
-        public BenchmarkGridScenario()
+        [GlobalSetup]
+        public void BenchmarkGridScenarioSetUp()
         {
-            _scenarioNodes = new Dictionary<string, Func<ScenarioParams[]>>()
+            BP = new BenchmarkParameters
             {
-                {Map1ForBenchmark, GetScenarioParamsForAR0011SR },
-                {Map2ForBenchmark, GetScenarioParamsForAR0012SR },
-                {Map3ForBenchmark, GetScenarioParamsForAR0013SR }
+                MapFilepath = Path.Combine(GetFolderPath(SpecialFolder.MyDocuments), "PathfindingData", "BaldursGate", "Maps", MapName),
+                ScenarioFilepath = Path.Combine(GetFolderPath(SpecialFolder.MyDocuments), "PathfindingData", "BaldursGate", "Scenarios", MapName + ".scen"),
+                AmountOfScenarios = 50,
+                WriteResultIntoReport = true
             };
         }
 
         [Params(Map1ForBenchmark, Map2ForBenchmark, Map3ForBenchmark)]
-        public string MapNames { get; set; }
+        public string MapName { get; set; }
+
+        public BenchmarkParameters BP { get; set; }
 
         [Benchmark(Baseline = true)]
-        public void RunAStarScenarios()
+        public void RunAStarWithDiagonalHeuristic()
         {
-            var scenarioParams = _scenarioNodes[MapNames]();
-            var tasks = new List<Task>();
-            foreach (var parameters in scenarioParams)
-            {
-                var scenario = new Scenario();
-                scenario.TrySetScenario(parameters);
-                tasks.Add(new ScenarioRunner().BeginRunScenario(scenario, new AStar()));
-            }
-            Task.WaitAll(tasks.ToArray());
+            BP.Heuristic = new DiagonalDistanceHeuristic();
+            BP.Algorithm = new AStar(BP.Heuristic);
+
+            new BenchmarkRunner().RunBenchmark(BP);
         }
 
-        private static ScenarioParams[] GetScenarioParamsForAR0011SR()
+        [Benchmark()]
+        public void RunAStarWithManhattanHeuristic()
         {
-            var mapFilepath = Path.Combine(GetFolderPath(SpecialFolder.MyDocuments), "PathfindingData", "BaldursGate", "Maps", Map1ForBenchmark);
-            return new ScenarioParams[]
-            {
-                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Start = new GridNode(82, 64), End = new GridNode(38, 126) },
-                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Start = new GridNode(103, 63), End = new GridNode(122, 158) },     
-                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Start = new GridNode(64, 59), End = new GridNode(161, 114) },      
-            };
+            BP.Heuristic = new ManhattanDistanceHeuristic();
+            BP.Algorithm = new AStar(BP.Heuristic);
+
+            new BenchmarkRunner().RunBenchmark(BP);
         }
 
-        private static ScenarioParams[] GetScenarioParamsForAR0012SR()
+        [Benchmark()]
+        public void RunAStarWithEuclidianHeuristic()
         {
-            var mapFilepath = Path.Combine(GetFolderPath(SpecialFolder.MyDocuments), "PathfindingData", "BaldursGate", "Maps", Map2ForBenchmark);
-            return new ScenarioParams[]
-            {
-                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Start = new GridNode(23, 67), End = new GridNode(89, 125) },      
-                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Start = new GridNode(132, 95), End = new GridNode(28, 49) },      
-                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Start = new GridNode(66, 34), End = new GridNode(135, 81) },     
-            };
-        }
+            BP.Heuristic = new EuclideanDistanceHeuristic();
+            BP.Algorithm = new AStar(BP.Heuristic);
 
-        private static ScenarioParams[] GetScenarioParamsForAR0013SR()
-        {
-            var mapFilepath = Path.Combine(GetFolderPath(SpecialFolder.MyDocuments), "PathfindingData", "BaldursGate", "Maps", Map3ForBenchmark);
-            return new ScenarioParams[]
-            {
-                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Start = new GridNode(87, 23), End = new GridNode(81, 134) },      
-                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Start = new GridNode(84, 26), End = new GridNode(92, 135) },				
-                new ScenarioParams() { FilePath = mapFilepath, MapType = MapTypes.Grid, Start = new GridNode(76, 10), End = new GridNode(101, 123) },			
-            };
+            new BenchmarkRunner().RunBenchmark(BP);
         }
     }
 }

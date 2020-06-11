@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Pathfinding.Lib.IntegrationTests
+namespace Pathfinding.Lib.Utils
 {
     public class DecimalPrecisionComparer : IEqualityComparer<decimal>
     {

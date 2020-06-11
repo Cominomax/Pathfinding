@@ -2,11 +2,15 @@
 using Pathfinding.Lib.Extensions;
 using Pathfinding.Lib.Maps.Utils;
 using Pathfinding.Lib.Scenarios.Base;
+using Pathfinding.Lib.Utils;
 using System;
 using System.Threading.Tasks;
 
 namespace Pathfinding.Lib.Scenarios
 {
+    /// <summary>
+    /// Use Scenarios to run a single pathfinding scenario.
+    /// </summary>
     public class ScenarioRunner
     {
         public Task<ScenarioResult> BeginRunScenario(IScenario scenario, IPathfindingAlgorithm Algorithm)
@@ -34,15 +38,21 @@ namespace Pathfinding.Lib.Scenarios
         {
             var res = new ScenarioResult()
             {
+                
                 Name = scenario.Name,
-                Success = true,
+                CorrectPathLength = scenario.ExpectedLength,
                 PathLength = taskResult.DistanceFromOrigin,
                 Path = taskResult.ToIEnumerable(),
             };
-            res.Description = string.Join(Environment.NewLine,
-                    $"Scenario {scenario.Name}: going from {scenario.Start} to {scenario.End}.",
-                    $"The result length of path is: {res.PathLength}.",
-                    res.Path.ToCollectionString());
+            res.Success = new DecimalPrecisionComparer().Equals(res.PathLength, scenario.ExpectedLength);
+            if (!res.Success)
+            {
+                res.ErrorMessage = string.Join(Environment.NewLine,
+                    $"Scenario {scenario.Name}: The path found was too different from the expected path",
+                    $"The expected path length was:   {scenario.ExpectedLength}",
+                    $"The calculated path length was: {res.PathLength}");
+            }
+
             return res;
         }
 
@@ -50,7 +60,8 @@ namespace Pathfinding.Lib.Scenarios
         {
             return new ScenarioResult()
             {
-                Description = string.Join(Environment.NewLine,
+                Success = false,
+                ErrorMessage = string.Join(Environment.NewLine,
                     $"Scenario {scenario.Name}: was not registered as Set. That could mean that the ",
                     "data of the scenario was outside of the boundaries of the map or that the map was",
                     "not found at the specified location:")

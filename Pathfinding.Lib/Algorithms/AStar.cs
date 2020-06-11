@@ -56,6 +56,10 @@ namespace Pathfinding.Lib.Algorithms
             }
             return null;
         }
-        
+
+        public string ToNiceString()
+        {
+            return "A*";
+        }
     }
 }

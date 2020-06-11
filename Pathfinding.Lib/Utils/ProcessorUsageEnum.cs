@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Pathfinding.Lib.IntegrationTests
+namespace Pathfinding.Lib.Utils
 {
     public enum ProcessorUsageEnum 
     {

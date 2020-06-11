@@ -8,9 +8,13 @@ namespace Pathfinding.Lib.UnitTests.Maps.Grid
     {
         public INode Parent => throw new NotImplementedException();
 
+        public int X => throw new NotImplementedException();
+
+        public int Y => throw new NotImplementedException();
+
         public decimal DistanceFromOrigin => throw new NotImplementedException();
 
-        public decimal F => throw new NotImplementedException();
+        public decimal F { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
 
         public int CompareTo(object obj)
         {
