@@ -20,26 +20,16 @@ namespace Pathfinding.Lib.Maps.Grid
         public int Y { get; }
         public DirectionEnum Direction { get; }
         public decimal DistanceFromOrigin { get; private set; }
+
         /// <summary>
         /// F is the distance between this node and the origin and the euclidian distance between this and the end. 
         /// </summary>
-        public decimal F{ get; private set; }
+        public decimal F{ get; set; }
 
         /// <summary>
         /// Parent of the Node.
         /// </summary>
         public INode Parent { get; private set;  }
-
-        /// <summary>
-        /// Calculates the F Value of the node. F is the distance between this node and the origin and the euclidian distance between this and the end. 
-        /// </summary>
-        /// <param name="start">INode implementor. Another instance of GridNode.</param>
-        /// <param name="end">INode implementor. Another instance of GridNode.</param>
-        public void SetF(INode end)
-        {
-            var distanceFromGoal = CalculateDiagonalDistance(end as GridNode);
-            F = DistanceFromOrigin + distanceFromGoal;
-        }
 
         /// <summary>
         /// Set the parent of the Node and the distanceFromOrigin
@@ -97,17 +87,6 @@ namespace Pathfinding.Lib.Maps.Grid
         {
             return $"({X},{Y})";
         }
-
-        /// <summary>
-        /// Calculates euclidian distance between this node and the end node
-        /// </summary>
-        /// <param name="end">other node whose distance we want to know</param>
-        /// <returns>euclidian distance decimal</returns>
-        private decimal CalculateDiagonalDistance(GridNode end)
-        {
-            return Math.Max( Math.Abs(X - end.X) , Math.Abs(Y - end.Y) );
-        }
-
 
         /// <summary>
         /// Calculates the distance from the parent

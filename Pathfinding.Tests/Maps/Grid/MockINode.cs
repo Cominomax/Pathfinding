@@ -22,11 +22,6 @@ namespace Pathfinding.Lib.UnitTests.Maps.Grid
             throw new NotImplementedException();
         }
 
-        public void SetF(INode end)
-        {
-            throw new NotImplementedException();
-        }
-
         public void SetParent(INode parent)
         {
             throw new NotImplementedException();

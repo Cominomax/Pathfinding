@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Pathfinding.Lib.Extensions;
+using Pathfinding.Lib.Heuristic;
 using Pathfinding.Lib.Maps.Utils;
 using Pathfinding.Lib.Scenarios.Base;
 
@@ -11,6 +12,13 @@ namespace Pathfinding.Lib.Algorithms
     /// </summary>
     public class AStar : IPathfindingAlgorithm
     {
+        private readonly IHeuristicCalculator _heuristicCalculator;
+
+        public AStar(IHeuristicCalculator heuristicCalculator)
+        {
+            _heuristicCalculator = heuristicCalculator;
+        }
+
         /// <summary>
         /// Will solve the scenario by finding the road between the start INode and the end INode on the current map.
         /// </summary>
@@ -31,7 +39,7 @@ namespace Pathfinding.Lib.Algorithms
                     {
                         return item;
                     }
-                    item.SetF(scen.End);
+                    item.F = _heuristicCalculator.CalculateHeuristic(item, scen.End);
 
                     if (open.Any(n => n.Equals(item) && n.F <= item.F))
                     {

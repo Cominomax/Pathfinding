@@ -11,6 +11,15 @@ namespace Pathfinding.Lib.Maps.Utils
         /// Previous step in path. 
         /// </summary>
         INode Parent { get; }
+
+        /// <summary>
+        /// X position in the GRID
+        /// </summary>
+        int X { get; }
+        /// <summary>
+        /// Y position in the GRID
+        /// </summary>
+        int Y { get; }
         /// <summary>
         /// Distance from the origin of path
         /// </summary>
@@ -18,13 +27,7 @@ namespace Pathfinding.Lib.Maps.Utils
         /// <summary>
         /// Value of chosen heuristic
         /// </summary>
-        decimal F { get; }
-
-        /// <summary>
-        /// Set the heuristic for that node.
-        /// </summary>
-        /// <param name="end">ending node</param>
-        void SetF(INode end);
+        decimal F { get; set; }
 
         /// <summary>
         /// Set the parent node and calculates the distance from origin.
